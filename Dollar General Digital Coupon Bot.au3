@@ -21,10 +21,11 @@ DirCreate($path)
 FileChangeDir($path)
 FileInstall("Includes\ImageSearchDLL.dll", $path & "\ImageSearchDLL.dll", 1)
 FileInstall("Includes\ImageSearch.au3", $path & "\ImageSearch.au3", 1)
-FileInstall("Images\Click.png", $path & "\Click.png", 1)
+FileInstall("Images\Click1.png", $path & "\Click1.png", 1)
+FileInstall("Images\Click2.png", $path & "\Click2.png", 1)
 _GDIPlus_Startup()
 OnAutoItExitRegister("_Exit")
-Global $iX, $iY,$Count
+Global $iX, $iY, $Count
 ProcessSetPriority(@ScriptName, 3)
 ProcessSetPriority("AutoIt3.exe", 3)
 Opt("MouseCoordMode", 1)
@@ -44,50 +45,56 @@ Global $iTop = $hwndpos[1]
 Global $iRight = $hwndpos[2] + $hwndpos[0]
 Global $iBottom = $hwndpos[3] + $hwndpos[1]
 MsgBox(64, $wintitle, "Make sure you are logged in, then press ok.")
-sleep(100)
+Sleep(100)
 WinActivate("Coupons Gallery")
-For $i= 1 to 100
-Send("{end}")
-sleep(100)
+For $i = 1 To 100
+	Send("{end}")
+	Sleep(100)
 Next
 Send("{home}")
 Do
 	If _FindImage() = 0 Then ;if failed
 		$Count += 1 ;increase count
 	Else
-		sleep(100)
+		Sleep(100)
 		$Count = 0
 	EndIf
 	If $Count > 2 Then
 		Send("{pgdn}") ;if count exceeds 2 then page down
 		Sleep(500)
 	EndIf
-	ConsoleWrite("Count = "&$Count&@crlf)
+	ConsoleWrite("Count = " & $Count & @CRLF)
 Until $Count > 30
 MsgBox(0, $wintitle, "Done.")
 Func _FindImage() ;the function that searches
-	Global $hImage = _GDIPlus_ImageLoadFromFile($path & "\Click.png")
+	Global $hImage = _GDIPlus_ImageLoadFromFile($path & "\Click1.png")
 	Global $hHBmp = _GDIPlus_BitmapCreateHBITMAPFromBitmap($hImage)
-	Local $iRet = _ImageSearchArea($hHBmp, 1, $iLeft, $iTop, $iRight, $iBottom, $iX, $iY, 5, 0)
+	Local $iRet = _ImageSearchArea($hHBmp, 1, $iLeft, $iTop, $iRight, $iBottom, $iX, $iY, 5, 0) ;100%
 	_WinAPI_DeleteObject($hHBmp)
 	_GDIPlus_ImageDispose($hImage)
 	If $iRet = 1 Then
-		ConsoleWrite("Found Image!"&@crlf)
+		ConsoleWrite("Found Image1!" & @CRLF)
 		MouseClick("", $iX, $iY, 1, 0)
 		MouseMove(0, 0, 0)
 		Return 1
 	Else
-		ConsoleWrite("Did not find image."&@crlf)
-		Return 0
+		Global $hImage = _GDIPlus_ImageLoadFromFile($path & "\Click2.png")
+		Global $hHBmp = _GDIPlus_BitmapCreateHBITMAPFromBitmap($hImage)
+		Local $iRet = _ImageSearchArea($hHBmp, 1, $iLeft, $iTop, $iRight, $iBottom, $iX, $iY, 5, 0) ;125%
+		_WinAPI_DeleteObject($hHBmp)
+		_GDIPlus_ImageDispose($hImage)
+		If $iRet = 1 Then
+			ConsoleWrite("Found Image2!" & @CRLF)
+			MouseClick("", $iX, $iY, 1, 0)
+			MouseMove(0, 0, 0)
+			Return 1
+		Else
+			ConsoleWrite("Did not find image." & @CRLF)
+			Return 0
+		EndIf
+
 	EndIf
 EndFunc   ;==>_FindImage
-Func GetWin()
-	$hwndpos = WinGetPos("Coupons Gallery")
-	$iLeft = $hwndpos[0]
-	$iTop = $hwndpos[1]
-	$iRight = $hwndpos[2] + $hwndpos[0]
-	$iBottom = $hwndpos[3] + $hwndpos[1]
-EndFunc   ;==>GetWin
 Func _Exit()
 	_GDIPlus_Shutdown()
 EndFunc   ;==>_Exit
