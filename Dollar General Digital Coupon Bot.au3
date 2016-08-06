@@ -17,6 +17,8 @@
 _Singleton("DGDCB")
 Global $path = @TempDir & "\BetaLeaf Software\Dollar General Digital Coupon Bot"
 Global $wintitle = "Dollar General Digital Coupon Bot"
+DirCreate($path)
+FileChangeDir($path)
 FileInstall("Includes\ImageSearchDLL.dll", $path & "\ImageSearchDLL.dll", 1)
 FileInstall("Includes\ImageSearch.au3", $path & "\ImageSearch.au3", 1)
 FileInstall("Images\Click.png", $path & "\Click.png", 1)
@@ -31,8 +33,6 @@ Opt("TrayIconDebug", 1)
 Opt("WinTitleMatchMode", 2)
 ;Opt("MouseClickDelay", 30)
 ;Opt("MouseClickDownDelay", 30)
-DirCreate($path)
-FileChangeDir($path)
 If Not WinExists("Coupons Gallery") Then
 	If ShellExecute("https://dg.coupons.com/coupons/") = 0 Then MsgBox(16, $wintitle, "Could not open browser to dg.coupons.com/coupons" & @CRLF & "Please open your browser to this url before continuing.")
 	Sleep(3000)
